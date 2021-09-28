@@ -55,6 +55,7 @@ describe 'puppet_metrics_dashboard' do
             .with_configure_telegraf(true)
             .with_consume_graphite(false)
             .with_pe_server_list(['testhost.example.com'])
+            .with_master_list(['testhost.example.com'])
             .with_puppetdb_list([])
             .with_influxdb_urls(['http://localhost:8086'])
             .with_telegraf_db_name('telegraf')
@@ -275,6 +276,35 @@ describe 'puppet_metrics_dashboard' do
           <<-PRE_COND
             class {'puppet_metrics_dashboard':
               pe_server_list   => [
+                'master.example.com',
+                'compiler1.example.com',
+                'compiler2.example.com',
+              ],
+              puppetdb_list => ['pe.example.com'],
+            }
+          PRE_COND
+        end
+
+        it { is_expected.to compile.with_all_deps }
+      end
+
+      context 'With an empty array of masters' do
+        let(:pre_condition) do
+          <<-PRE_COND
+            class {'puppet_metrics_dashboard':
+              master_list => [],
+            }
+          PRE_COND
+        end
+
+        it { is_expected.to compile.with_all_deps }
+      end
+
+      context 'with remote master and puppetdb' do
+        let(:pre_condition) do
+          <<-PRE_COND
+            class {'puppet_metrics_dashboard':
+              master_list   => [
                 'master.example.com',
                 'compiler1.example.com',
                 'compiler2.example.com',

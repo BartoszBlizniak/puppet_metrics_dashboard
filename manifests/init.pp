@@ -160,7 +160,7 @@
 #     overwrite_dashboards   => false,
 #     configure_telegraf     => true,
 #     enable_telegraf        => true,
-#     pe_server_list            => ['primary.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
+#     pe_server_list         => ['primary.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
 #     puppetdb_list          => ['puppetdb01.example.com', 'puppetdb02.example.com'],
 #     postgres_host_list     => ['postgres01.example.com', 'postgres02.example.com'],
 #   }
@@ -171,7 +171,7 @@
 #     overwrite_dashboards   => false,
 #     consume_graphite       => true,
 #     influxdb_database_name => ['graphite'],
-#     pe_server_list            => ['primary', 'compiler01'],
+#     pe_server_list         => ['primary', 'compiler01'],
 #   }
 #
 # @example Configure Telegraf, Graphite, and Archive
@@ -222,12 +222,21 @@ class puppet_metrics_dashboard (
 
   Hash $grafana_config,
 
-  Puppet_metrics_dashboard::HostList $pe_server_list        = puppet_metrics_dashboard::localhost_or_hosts_with_pe_profile('master'),
+  Puppet_metrics_dashboard::HostList $pe_server_list,
+  Puppet_metrics_dashboard::HostList $master_list,
   Puppet_metrics_dashboard::HostList $puppetdb_list      = puppet_metrics_dashboard::localhost_or_hosts_with_pe_profile('puppetdb'),
   Puppet_metrics_dashboard::HostList $postgres_host_list = puppet_metrics_dashboard::localhost_or_hosts_with_pe_profile('database'),
 
   Puppet_metrics_dashboard::Puppetdb_metric $puppetdb_metrics = puppet_metrics_dashboard::puppetdb_metrics(),
   ) {
+
+  if $master_list {
+    Puppet_metrics_dashboard::HostList $master_list  = puppet_metrics_dashboard::localhost_or_hosts_with_pe_profile('master')
+    warn('master_list parameter will be removed in future release of this module, please switch to pe_server_list')
+  }
+  else {
+    Puppet_metrics_dashboard::HostList $pe_server_list = puppet_metrics_dashboard::localhost_or_hosts_with_pe_profile('master')
+  }
 
   unless $facts['os']['family'] =~ /^(RedHat|Debian)$/ {
     fail("Installation on ${facts['os']['family']} is not supported")

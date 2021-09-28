@@ -81,7 +81,7 @@ class { 'puppet_metrics_dashboard':
   overwrite_dashboards   => false,
   configure_telegraf     => true,
   enable_telegraf        => true,
-  pe_server_list            => ['master.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
+  pe_server_list         => ['master.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
   puppetdb_list          => ['puppetdb01.example.com', 'puppetdb02.example.com'],
   postgres_host_list     => ['postgres01.example.com', 'postgres02.example.com'],
 }
@@ -95,7 +95,7 @@ class { 'puppet_metrics_dashboard':
   overwrite_dashboards   => false,
   consume_graphite       => true,
   influxdb_database_name => ['graphite'],
-  pe_server_list            => ['master', 'master02'],
+  pe_server_list         => ['master', 'master02'],
 }
 ```
 

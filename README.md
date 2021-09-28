@@ -140,7 +140,7 @@ node 'dashboard.example.com' {
     overwrite_dashboards   => false,
     configure_telegraf     => true,
     enable_telegraf        => true,
-    pe_server_list            => ['primary.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
+    pe_server_list         => ['primary.example.com', ['compiler01.example.com', 9140], ['compiler02.example.com', 9140]],
     puppetdb_list          => ['puppetdb01.example.com', 'puppetdb02.example.com'],
     postgres_host_list     => ['postgres01.example.com', 'postgres02.example.com'],
   }

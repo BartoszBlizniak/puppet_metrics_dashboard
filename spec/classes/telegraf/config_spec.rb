@@ -161,6 +161,58 @@ describe 'puppet_metrics_dashboard::telegraf::config' do
           PRE_COND
         end
 
+        context 'when master_list includes entries with port numbers' do
+          let(:pre_condition) do
+            <<-PRE_COND
+              class { 'puppet_metrics_dashboard':
+                master_list        => ['some-host.test',
+                                       ['some-other.host.test', 9140]],
+                puppetdb_list      => [],
+                postgres_host_list => [],
+              }
+            PRE_COND
+          end
+  
+          it do
+            is_expected.to contain_file('/etc/telegraf/telegraf.d/puppetserver_metrics_some-host.test.conf')\
+              .with_content(%r{some-host\.test})
+            is_expected.to contain_file('/etc/telegraf/telegraf.d/puppetserver_metrics_some-other.host.test.conf')\
+              .with_content(%r{some-other\.host\.test:9140})
+          end
+        end
+  
+        context 'when puppetdb_list includes entries with port numbers' do
+          let(:pre_condition) do
+            <<-PRE_COND
+              class { 'puppet_metrics_dashboard':
+                master_list        => [],
+                puppetdb_list      => ['some-host.test',
+                                       ['some-other.host.test', 8100]],
+                postgres_host_list => [],
+              }
+            PRE_COND
+          end
+  
+          it do
+            is_expected.to contain_file('/etc/telegraf/telegraf.d/puppetdb_command_queue_some-host.test.conf')\
+              .with_content(%r{some-host\.test})
+            is_expected.to contain_file('/etc/telegraf/telegraf.d/puppetdb_command_queue_some-other.host.test.conf')\
+              .with_content(%r{some-other\.host\.test:8100})
+          end
+        end
+  
+        context 'when postgres_host_list includes entries with port numbers' do
+          let(:pre_condition) do
+            <<-PRE_COND
+              class { 'puppet_metrics_dashboard':
+                master_list        => [],
+                puppetdb_list      => [],
+                postgres_host_list => ['some-host.test',
+                                       ['some-other.host.test', 9000]],
+              }
+            PRE_COND
+          end
+
         it do
           is_expected.to contain_file('/etc/telegraf/telegraf.d/pe_postgres_some-host.test.conf')\
             .with_content(%r{some-host\.test})
